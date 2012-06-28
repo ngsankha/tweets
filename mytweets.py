@@ -21,7 +21,10 @@ def doRequest(request):
 def processTweets(obj):
 	if(len(obj) == 200):
 		maxid = (obj[-1])['id'] - 1
-		request = "/1/statuses/user_timeline.json?screen_name=" + sys.argv[1] + "&count=200&include_rts=1&trim_user=1&max_id=" + str(maxid)
+		if(tweet_id == -1):
+			request = "/1/statuses/user_timeline.json?screen_name=" + sys.argv[1] + "&count=200&include_rts=1&trim_user=1&max_id=" + str(maxid)
+		else:
+			request = "/1/statuses/user_timeline.json?screen_name=" + sys.argv[1] + "&count=200&include_rts=1&trim_user=1&max_id=" + str(maxid) + "&since_id=" + tweet_id
 		processTweets(doRequest(request))
 		
 	for tweet in reversed(obj):
@@ -34,8 +37,8 @@ def processTweets(obj):
 if len(sys.argv) > 1:
 	if(os.path.exists("tweet_id")):
 		tweet_id = open("tweet_id", 'r').read()
-		processTweets(getTweets(tweet_id))
 	else:
-		processTweets(getTweets(-1))
+		tweet_id = -1
+	processTweets(getTweets(tweet_id))
 else:
 	print("Usage: python mytweets.py username")
